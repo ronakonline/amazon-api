@@ -1,0 +1,9 @@
+com\jay\amazonapi\Controllers\UserController.class
+com\jay\amazonapi\Services\UserService.class
+com\jay\amazonapi\Controllers\ProductController.class
+com\jay\amazonapi\AmazonApiApplication.class
+com\jay\amazonapi\Models\ProductRepository.class
+com\jay\amazonapi\Models\User.class
+com\jay\amazonapi\Services\ProductService.class
+com\jay\amazonapi\Models\Product.class
+com\jay\amazonapi\Models\UserRepository.class
