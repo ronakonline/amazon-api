@@ -1,5 +1,6 @@
 package com.jay.amazonapi.Controllers;
 
+import com.jay.amazonapi.CustomizedResponse;
 import com.jay.amazonapi.Models.Product;
 import com.jay.amazonapi.Services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,16 @@ public class ProductController {
             MediaType.APPLICATION_JSON_VALUE
     })
     public ResponseEntity addproduct(@RequestBody Product product){
-        service.addproduct(product);
-        return new ResponseEntity(HttpStatus.OK);
+        CustomizedResponse customizedResponse;
+        try{
+            service.addproduct(product);
+            customizedResponse = new CustomizedResponse("Product Added!",null);
+            return new ResponseEntity(customizedResponse,HttpStatus.OK);
+        }catch (Exception e){
+            customizedResponse = new CustomizedResponse(e.getMessage(),null);
+            return new ResponseEntity(customizedResponse,HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @GetMapping("/products/all")
@@ -34,7 +43,14 @@ public class ProductController {
 
     @GetMapping("products/getproducts/{category}")
     public ResponseEntity getproductsByCategory(@PathVariable("category") String category){
-        return new ResponseEntity(service.productsByCategory(category), HttpStatus.OK);
+        CustomizedResponse customizedResponse;
+        try{
+            customizedResponse = new CustomizedResponse("List of product",service.productsByCategory(category));
+            return new ResponseEntity(customizedResponse, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @GetMapping("products/bestsellers")
@@ -51,11 +67,32 @@ public class ProductController {
             MediaType.APPLICATION_JSON_VALUE
     })
     public ResponseEntity updateproduct(@PathVariable("id") String id, @RequestBody Product product){
-        return new ResponseEntity(service.updateproduct(id,product), HttpStatus.OK);
+
+        CustomizedResponse customizedResponse;
+
+        try{
+            service.updateproduct(id,product);
+            customizedResponse = new CustomizedResponse("Product Update",null);
+            return new ResponseEntity(customizedResponse, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @DeleteMapping("/products/deleteproduct/{id}")
     public ResponseEntity deleteproduct(@PathVariable("id") String id){
-        return new ResponseEntity(service.deleteproduct(id), HttpStatus.OK);
+
+        CustomizedResponse customizedResponse;
+
+        try {
+            service.deleteproduct(id);
+            customizedResponse= new CustomizedResponse("Product Deleted!",null);
+            return new ResponseEntity(customizedResponse, HttpStatus.OK);
+
+        }catch (Exception e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+
     }
 }

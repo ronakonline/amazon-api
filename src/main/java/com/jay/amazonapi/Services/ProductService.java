@@ -2,7 +2,11 @@ package com.jay.amazonapi.Services;
 
 import com.jay.amazonapi.Models.Product;
 import com.jay.amazonapi.Models.ProductRepository;
+import com.mongodb.client.DistinctIterable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +18,16 @@ public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-    public void addproduct(Product product){
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    public void addproduct(Product product) throws Exception
+    {
+        if(product.getName().isEmpty() || product.getName()==""){
+            throw new Exception("Product Name Required!");
+        }else if(product.getCategory().isEmpty() || product.getCategory()==""){
+            throw  new Exception("Product Category Required!");
+        }
         repository.insert(product);
     }
 
@@ -22,23 +35,31 @@ public class ProductService {
         return  repository.findAll();
     }
 
-    public List<Product> productsByCategory(String category){
-        return repository.findByCategory(category);
+    public List<Product> productsByCategory(String category) throws Exception{
+        Query query = new Query();
+        query.addCriteria(Criteria.where("category").is(category));
+        List<Product> products= mongoTemplate.find(query,Product.class);
+        if(products.isEmpty()){
+            throw new Exception("No product Found");
+        }
+        return products;
     }
 
     public List allcategories(){
-        return repository.findAll();
+        return mongoTemplate.query(Product.class).distinct("category").as(String.class).all();
     }
 
     public List<Product> bestsellerproducts(){
-        return repository.findByBestseller("true");
+        Query query = new Query();
+        query.addCriteria(Criteria.where("bestseller").is("true"));
+        return mongoTemplate.find(query,Product.class);
     }
 
     public Optional<Product> getproduct(String id){
         return repository.findById(id);
     }
 
-    public String updateproduct(String id,Product newproduct){
+    public void updateproduct(String id,Product newproduct) throws  Exception{
         Optional<Product> product;
         product = repository.findById(id);
         if(product.isPresent()){
@@ -51,19 +72,17 @@ public class ProductService {
             oldproduct.setPrice(newproduct.getPrice());
             oldproduct.setQuantity(newproduct.getQuantity());
             repository.save(oldproduct);
-            return "Product Updated!";
         }else{
-            return "Invalid Product Id!";
+            throw new Exception("Invalid Product Id");
         }
 
     }
 
-    public String deleteproduct(String id){
+    public void deleteproduct(String id) throws  Exception{
         if(repository.findById(id).isPresent()){
             repository.deleteById(id);
-            return "Product Deleted!";
         }else{
-            return "Invalid Product Id!";
+            throw new Exception("Invalid Product Id!");
         }
     }
 

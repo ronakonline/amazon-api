@@ -1,6 +1,9 @@
 package com.jay.amazonapi.Models;
 
+import org.springframework.data.annotation.Id;
+
 public class Product {
+    @Id
     private String id;
     private String name;
     private String price;

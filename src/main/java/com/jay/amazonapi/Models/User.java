@@ -5,16 +5,22 @@ import org.springframework.data.annotation.Id;
 public class User {
     @Id
     private String id;
+    private String name;
     private String email;
     private String password;
+    private String type;
+
 
     public User() {
+
     }
 
-    public User(String id, String email, String password) {
+    public User(String id, String name, String email, String password, String type) {
         this.id = id;
+        this.name = name;
         this.email = email;
         this.password = password;
+        this.type = type;
     }
 
     public String getId() {
@@ -41,12 +47,31 @@ public class User {
         this.password = password;
     }
 
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", type='" + type + '\'' +
                 '}';
     }
 }
